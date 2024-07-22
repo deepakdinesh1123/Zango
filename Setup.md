@@ -253,3 +253,4 @@ celery -A <project_name> beat -l INFO --scheduler django_celery_beat.schedulers:
 
   task_name can be taken from App Panel -> Tasks table
   ```
+
