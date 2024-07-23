@@ -5,6 +5,7 @@ on:
     types: [closed]
     paths:
       - 'CHANGELOG.md'
+      - 'backend/**'
     paths-ignore:
       - 'docs/**'
       - 'examples/**'
