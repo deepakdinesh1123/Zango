@@ -2,8 +2,8 @@ name: Publish Python Package
 
 on:
   push:
-    tags:
-      - 'v*.*.*'  # Trigger the workflow on new version tags
+    branches:
+      - main
 
 jobs:
   build:
