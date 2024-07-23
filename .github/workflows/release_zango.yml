@@ -24,6 +24,7 @@ jobs:
       run: |
         VERSION=$(grep -oE "\d+\.\d+\.\d+" CHANGELOG.md | head -n 3 | tail -n 1)
         ls
+        echo $VERSION
         echo "VERSION=$VERSION" >> $GITHUB_ENV
 
     - name: Set up Docker Buildx
