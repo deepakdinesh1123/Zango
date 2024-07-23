@@ -22,7 +22,7 @@ jobs:
     - name: Get version from file
       id: get_version
       run: |
-        VERSION=$(grep -oE "\d+\.\d+\.\d+" CHANGELOG.md | head -n 3 | tail -n 1
+        VERSION=$(grep -oE "\d+\.\d+\.\d+" CHANGELOG.md | head -n 3 | tail -n 1)
         echo $VERSION
         echo -n "VERSION=$VERSION" >> $GITHUB_ENV
 
