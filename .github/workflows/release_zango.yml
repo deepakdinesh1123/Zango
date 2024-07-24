@@ -7,11 +7,10 @@ on:
       - 'CHANGELOG.md'
     branches:
       - main
-  push:
 
 jobs:
   publish-to-dockerhub:
-    # if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
@@ -50,108 +49,108 @@ jobs:
         push: true
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/zango:${{ env.VERSION }}
 
-  # build-zango:
-  #   name: Build distribution 📦
-  #   runs-on: ubuntu-latest
+  build-zango:
+    name: Build distribution 📦
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #   - uses: actions/checkout@v4
-  #   - name: Set up Python
-  #     uses: actions/setup-python@v5
-  #     with:
-  #       python-version: "3.10"
-  #   - name: Install pypa/build
-  #     run: >-
-  #       python3 -m
-  #       pip install
-  #       build
-  #       --user
-  #   - name: Build a binary wheel and a source tarball
-  #     run: |
-  #       python3 -m build backend --outdir dist
-  #   - name: Store the distribution packages
-  #     if: github.event.pull_request.merged == true
-  #     uses: actions/upload-artifact@v3
-  #     with:
-  #       name: python-package-distributions
-  #       path: dist/
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.10"
+    - name: Install pypa/build
+      run: >-
+        python3 -m
+        pip install
+        build
+        --user
+    - name: Build a binary wheel and a source tarball
+      run: |
+        python3 -m build backend --outdir dist
+    - name: Store the distribution packages
+      if: github.event.pull_request.merged == true
+      uses: actions/upload-artifact@v3
+      with:
+        name: python-package-distributions
+        path: dist/
 
-  # publish-to-testpypi:
-  #   if: github.event.pull_request.merged == true
-  #   name: Publish Python 🐍 distribution 📦 to TestPyPI
-  #   needs:
-  #   - build-zango
-  #   runs-on: ubuntu-latest
+  publish-to-testpypi:
+    if: github.event.pull_request.merged == true
+    name: Publish Python 🐍 distribution 📦 to TestPyPI
+    needs:
+    - build-zango
+    runs-on: ubuntu-latest
 
-  #   environment:
-  #     name: testpypi
-  #     url: https://test.pypi.org/p/zango
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/zango
 
-  #   permissions:
-  #     id-token: write  # IMPORTANT: mandatory for trusted publishing
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for trusted publishing
 
-  #   steps:
-  #   - name: Download all the dists
-  #     uses: actions/download-artifact@v3
-  #     with:
-  #       name: python-package-distributions
-  #       path: dist/
-  #   - name: Publish distribution 📦 to TestPyPI
-  #     uses: pypa/gh-action-pypi-publish@release/v1
-  #     with:
-  #       password: ${{ secrets.PYPI_API_TOKEN }}
-  #       repository-url: https://test.pypi.org/legacy/
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@v3
+      with:
+        name: python-package-distributions
+        path: dist/
+    - name: Publish distribution 📦 to TestPyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        password: ${{ secrets.PYPI_API_TOKEN }}
+        repository-url: https://test.pypi.org/legacy/
 
-  # github-release:
-  #   if: github.event.pull_request.merged == true
-  #   name: >-
-  #     Sign the Python 🐍 distribution 📦 with Sigstore
-  #     and upload them to GitHub Release
-  #   needs:
-  #     - publish-to-testpypi
-  #     - build-zango
-  #   runs-on: ubuntu-latest
+  github-release:
+    if: github.event.pull_request.merged == true
+    name: >-
+      Sign the Python 🐍 distribution 📦 with Sigstore
+      and upload them to GitHub Release
+    needs:
+      - publish-to-testpypi
+      - build-zango
+    runs-on: ubuntu-latest
 
-  #   permissions:
-  #     contents: write  # IMPORTANT: mandatory for making GitHub Releases
-  #     id-token: write  # IMPORTANT: mandatory for sigstore
+    permissions:
+      contents: write  # IMPORTANT: mandatory for making GitHub Releases
+      id-token: write  # IMPORTANT: mandatory for sigstore
 
-  #   steps:
-  #   - name: Checkout repository
-  #     uses: actions/checkout@v4
-  #   - name: Download all the dists
-  #     uses: actions/download-artifact@v3
-  #     with:
-  #       name: python-package-distributions
-  #       path: dist/
-  #   - name: Sign the dists with Sigstore
-  #     uses: sigstore/gh-action-sigstore-python@v2.1.1
-  #     with:
-  #       inputs: >-
-  #         ./dist/*.tar.gz
-  #         ./dist/*.whl
-  #   - name: Get version from file
-  #     id: get_version
-  #     run: |
-  #         set -e
-  #         VERSION=$(grep -oE "[0-9]+\.[0-9]+\.[0-9]+" CHANGELOG.md | sed -n '3p' || echo "Not found")
-  #         echo "VERSION=$VERSION"
-  #         echo "VERSION=$VERSION" >> $GITHUB_ENV
-  #   - name: Extract release notes
-  #     id: extract-changelog
-  #     uses: sean0x42/markdown-extract@v2
-  #     with:
-  #       file: CHANGELOG.md
-  #       pattern: '${{ env.VERSION }}'
-  #   - name: Create Release
-  #     id: create_release
-  #     uses: actions/create-release@v1
-  #     env:
-  #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Download all the dists
+      uses: actions/download-artifact@v3
+      with:
+        name: python-package-distributions
+        path: dist/
+    - name: Sign the dists with Sigstore
+      uses: sigstore/gh-action-sigstore-python@v2.1.1
+      with:
+        inputs: >-
+          ./dist/*.tar.gz
+          ./dist/*.whl
+    - name: Get version from file
+      id: get_version
+      run: |
+          set -e
+          VERSION=$(grep '__version__' backend/src/zango/__init__.py | sed 's/.*__version__ = "\(.*\)"/\1/'| tail -1)
+          echo "VERSION=$VERSION"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+    - name: Extract release notes
+      id: extract-changelog
+      uses: sean0x42/markdown-extract@v2
+      with:
+        file: CHANGELOG.md
+        pattern: '${{ env.VERSION }}'
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
-  #     with:
-  #       tag_name: v${{ env.VERSION }} # Use the environment variable
-  #       release_name: Release v${{ env.VERSION }}
-  #       prerelease: false
-  #       draft: false
-  #       body: ${{ steps.extract-changelog.outputs.markdown }}
+      with:
+        tag_name: v${{ env.VERSION }} # Use the environment variable
+        release_name: Release v${{ env.VERSION }}
+        prerelease: false
+        draft: false
+        body: ${{ steps.extract-changelog.outputs.markdown }}
