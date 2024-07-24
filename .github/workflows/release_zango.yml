@@ -106,8 +106,9 @@ jobs:
     name: >-
       Sign the Python 🐍 distribution 📦 with Sigstore
       and upload them to GitHub Release
-    # needs:
+    needs:
     # - publish-to-testpypi
+      - build-zango
     runs-on: ubuntu-latest
 
     permissions:
