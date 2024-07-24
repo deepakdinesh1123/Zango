@@ -22,7 +22,7 @@ jobs:
       id: get_version
       run: |
         set -e
-        VERSION=$(grep -oE "[0-9]+\.[0-9]+\.[0-9]+" CHANGELOG.md | sed -n '3p' || echo "Not found")
+        VERSION=$(grep '__version__' backend/src/zango/__init__.py | sed 's/.*__version__ = "\(.*\)"/\1/'| tail -1)
         echo "VERSION=$VERSION"
         echo "VERSION=$VERSION" >> $GITHUB_ENV
 
@@ -133,7 +133,7 @@ jobs:
       id: get_version
       run: |
           set -e
-          VERSION=$(grep -oE "[0-9]+\.[0-9]+\.[0-9]+" CHANGELOG.md | sed -n '3p' || echo "Not found")
+          VERSION=$(grep '__version__' backend/src/zango/__init__.py | sed 's/.*__version__ = "\(.*\)"/\1/'| tail -1)
           echo "VERSION=$VERSION"
           echo "VERSION=$VERSION" >> $GITHUB_ENV
     - name: Extract release notes

@@ -8,7 +8,7 @@ REQUIREMENTS_DIR = os.path.join(PROJECT_DIR, "requirements")
 
 README = os.path.join(PROJECT_DIR, "README.md")
 
-PLATFORM_VERSION = "0.2.8"
+PLATFORM_VERSION = "0.2.9-pre-release"
 
 
 def get_requirements(env):
