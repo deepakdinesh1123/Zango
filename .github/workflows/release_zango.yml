@@ -1,4 +1,4 @@
-name: Publish Python 🐍 distribution 📦 to PyPI and TestPyPI
+name: Publish Zango to Docker Hub and TestPyPI
 
 on:
   pull_request:
@@ -9,45 +9,45 @@ on:
       - main
 
 jobs:
-  # publish-to-dockerhub:
-    # if: github.event.pull_request.merged == true
-    # runs-on: ubuntu-latest
+  publish-to-dockerhub:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
 
-    # steps:
+    steps:
     
-    # - name: Checkout repository
-    #   uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
     
-    # - name: Get version from file
-    #   id: get_version
-    #   run: |
-    #     set -e
-    #     VERSION=$(grep -oE "[0-9]+\.[0-9]+\.[0-9]+" CHANGELOG.md | sed -n '3p' || echo "Not found")
-    #     echo "VERSION=$VERSION"
-    #     echo "VERSION=$VERSION" >> $GITHUB_ENV
+    - name: Get version from file
+      id: get_version
+      run: |
+        set -e
+        VERSION=$(grep -oE "[0-9]+\.[0-9]+\.[0-9]+" CHANGELOG.md | sed -n '3p' || echo "Not found")
+        echo "VERSION=$VERSION"
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
 
-    # - name: Set up Docker Buildx
-    #   uses: docker/setup-buildx-action@v2
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
 
-    # - name: Login to Docker Hub
-    #   uses: docker/login-action@v2
-    #   with:
-    #     username: ${{ secrets.DOCKERHUB_USERNAME }}
-    #     password: ${{ secrets.DOCKERHUB_TOKEN }}
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    # - name: Build and Push Docker image
-    #   uses: docker/build-push-action@v4
-    #   with:
-    #     context: .
-    #     push: true
-    #     tags: ${{ secrets.DOCKERHUB_USERNAME }}/zango:latest
+    - name: Build and Push Docker image
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/zango:latest
     
-    # - name: Build and Push Docker image with tag
-    #   uses: docker/build-push-action@v4
-    #   with:
-    #     context: .
-    #     push: true
-    #     tags: ${{ secrets.DOCKERHUB_USERNAME }}/zango:${{ env.VERSION }}
+    - name: Build and Push Docker image with tag
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/zango:${{ env.VERSION }}
 
   build-zango:
     name: Build distribution 📦
@@ -75,31 +75,31 @@ jobs:
         name: python-package-distributions
         path: dist/
 
-  # publish-to-testpypi:
-  #   if: github.event.pull_request.merged == true
-  #   name: Publish Python 🐍 distribution 📦 to TestPyPI
-  #   needs:
-  #   - build-zango
-  #   runs-on: ubuntu-latest
+  publish-to-testpypi:
+    if: github.event.pull_request.merged == true
+    name: Publish Python 🐍 distribution 📦 to TestPyPI
+    needs:
+    - build-zango
+    runs-on: ubuntu-latest
 
-  #   environment:
-  #     name: testpypi
-  #     url: https://test.pypi.org/p/zango
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/zango
 
-  #   permissions:
-  #     id-token: write  # IMPORTANT: mandatory for trusted publishing
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for trusted publishing
 
-  #   steps:
-  #   - name: Download all the dists
-  #     uses: actions/download-artifact@v3
-  #     with:
-  #       name: python-package-distributions
-  #       path: dist/
-  #   - name: Publish distribution 📦 to TestPyPI
-  #     uses: pypa/gh-action-pypi-publish@release/v1
-  #     with:
-  #       password: ${{ secrets.PYPI_API_TOKEN }}
-  #       repository-url: https://test.pypi.org/legacy/
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@v3
+      with:
+        name: python-package-distributions
+        path: dist/
+    - name: Publish distribution 📦 to TestPyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        password: ${{ secrets.PYPI_API_TOKEN }}
+        repository-url: https://test.pypi.org/legacy/
 
   github-release:
     if: github.event.pull_request.merged == true
@@ -107,7 +107,7 @@ jobs:
       Sign the Python 🐍 distribution 📦 with Sigstore
       and upload them to GitHub Release
     needs:
-    # - publish-to-testpypi
+      - publish-to-testpypi
       - build-zango
     runs-on: ubuntu-latest
 

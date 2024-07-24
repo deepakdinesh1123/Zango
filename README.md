@@ -13,7 +13,7 @@
   <a href="#">
         <img alt="PyPI version" src="https://badge.fury.io/py/zango.svg"></a> 
   <a href="#">
-      <img alt="Build" src="https://img.shields.io/github/actions/workflow/status/deepakdinesh1123/zango/release_zango.yml?branch=main"></a> 
+      <img alt="Build" src="https://github.com/deepakdinesh1123/Zango/actions/workflows/release_zango.yml/badge.svg"></a> 
   <a href="https://opensource.org/licenses/Apache-2.0" target="_blank">
       <img alt="License" src="https://img.shields.io/badge/License-Apache_2.0-blue.svg"> </a>
 </p>
