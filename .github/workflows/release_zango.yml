@@ -19,6 +19,8 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
     - name: Extract Latest Tag
+      env:
+        GH_TOKEN: ${{ github.token }}
       run: |
         gh release ls -L 1 --json "tagName" >> info.json
         LATEST_TAG=$(cat info.json | jq -r '.[0].tagName')
