@@ -33,7 +33,7 @@ jobs:
   publish-to-dockerhub:
     runs-on: ubuntu-latest
     needs: check-version
-    if: ${{ needs.check-version.outputs.incorrect_version == 'false' }} && github.event.pull_request.merged == true
+    if: ${{ needs.check-version.outputs.incorrect_version == 'false' }}
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
