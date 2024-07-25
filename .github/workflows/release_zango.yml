@@ -10,30 +10,34 @@ on:
   push:
 
 jobs:
-
-  check-version:
+  check-publish:
     runs-on: ubuntu-latest
     outputs:
-      incorrect_version: ${{ steps.check_changes.outputs.incorrect }}
-      version: ${{ steps.check_changes.outputs.version }}
+      version: ${{ steps.check_publish.outputs.version }}
+      publish: ${{ steps.check_publish.outputs.publish }}
     steps:
-    - name: Check Version
-      id: check_changes
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Check Publish
+      id: check_publish
+      env:
+        LATEST_TAG: ${{ github.event.release.tag_name }}
+        MERGED: ${{ github.event.pull_request.merged }}
       run: |
         CHANGELOG_VERSION=$(grep -m 1 '## \[' CHANGELOG.md | sed 's/.*\[\(.*\)\]/\1/' | grep -oE '([0-9]+\.[0-9]+\.[0-9]+\.?\w*)')
         INIT_VERSION=$(grep '__version__' backend/src/zango/__init__.py | sed 's/.*__version__ = "\(.*\)"/\1/'| tail -1)
         SETUP_VERSION=$(grep 'PLATFORM_VERSION' backend/setup.py | sed 's/.*PLATFORM_VERSION = "\(.*\)"/\1/'| head -n 1)
-        if [[ "$CHANGELOG_VERSION" != "$INIT_VERSION" ]] || [[ "$CHANGELOG_VERSION" != "$SETUP_VERSION" ]]; then
-          echo "incorrect_version=true" >> $GITHUB_OUTPUT
+        if [[ "$CHANGELOG_VERSION" != "$INIT_VERSION" ]] || [[ "$CHANGELOG_VERSION" != "$SETUP_VERSION" ]] || [[ "$LATEST_TAG" == "v$CHANGELOG_VERSION" ]] || [[ "$MERGED" != "true" ]]; then
+          echo "publish=false" >> $GITHUB_OUTPUT
         else
-          echo "incorrect_version=false" >> $GITHUB_OUTPUT
+          echo "publish=true" >> $GITHUB_OUTPUT
           echo "version=$INIT_VERSION" >> $GITHUB_OUTPUT
         fi
 
   publish-to-dockerhub:
     runs-on: ubuntu-latest
-    needs: check-version
-    if: ${{ needs.check-version.outputs.incorrect_version == 'false' }}
+    needs: check-publish
+    if: ${{ needs.check-publish.outputs.publish == false }}
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
