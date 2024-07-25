@@ -19,7 +19,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
     - name: Get latest tag
-      run: echo "LATEST_TAG=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+      run: echo "LATEST_TAG=${{ github.ref_name }}" >> $GITHUB_ENV
     - name: Check merged
       run: echo "MERGED=${{ github.event.pull_request.merged }}" >> $GITHUB_ENV
     - name: Check Publish
