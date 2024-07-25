@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ``Release Workflow Test`` setting issue [(#189)](https://github.com/Healthlane-Technologies/Zango/pull/189)
 - ``Release Workflow Test`` setting issue [(#189)](https://github.com/Healthlane-Technologies/Zango/pull/189)
 - ``Release Workflow Test`` setting issue [(#189)](https://github.com/Healthlane-Technologies/Zango/pull/189)
-- ``Release Workflow Test`` setting issue [(#189)](https://github.com/Healthlane-Technologies/Zango/pull/189)
+- ``Release Workflow Te`` setting issue [(#189)](https://github.com/Healthlane-Technologies/Zango/pull/189)
 
 ## [0.2.9.dev] - 2024-07-24
 
