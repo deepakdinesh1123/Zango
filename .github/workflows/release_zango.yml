@@ -7,6 +7,7 @@ on:
       - 'CHANGELOG.md'
     branches:
       - main
+  push:
 
 jobs:
   publish-to-dockerhub:
@@ -14,27 +15,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3
-    - name: Checkout repository
-      uses: actions/checkout@v4
-    
-    - name: Get version from file
-      id: get_version
+    - name:
+      id: check_changes
       run: |
-        set -e
-        VERSION=$(grep '__version__' backend/src/zango/__init__.py | sed 's/.*__version__ = "\(.*\)"/\1/'| tail -1)
-        echo "VERSION=$VERSION"
-        echo "VERSION=$VERSION" >> $GITHUB_ENV
+        CHANGELOG_VERSION=$(grep -m 1 '## \[' CHANGELOG.md | sed 's/.*\[\(.*\)\]/\1/' | grep -oE '([0-9]+\.[0-9]+\.[0-9]+\.?\w*)')
+        INIT_VERSION=$(grep '__version__' backend/src/zango/__init__.py | sed 's/.*__version__ = "\(.*\)"/\1/'| tail -1)
+        SETUP_VERSION=$(grep 'PLATFORM_VERSION' backend/setup.py | sed 's/.*PLATFORM_VERSION = "\(.*\)"/\1/'| head -n 1)
+        echo ${CHANGELOG_VERSION} ${INIT_VERSION} ${SETUP_VERSION}
+    # - name: Set up QEMU
+    #   uses: docker/setup-qemu-action@v3
+    # - name: Checkout repository
+    #   uses: actions/checkout@v4
+    
+    # - name: Get version from file
+    #   id: get_version
+    #   run: |
+    #     set -e
+    #     VERSION=$(grep '__version__' backend/src/zango/__init__.py | sed 's/.*__version__ = "\(.*\)"/\1/'| tail -1)
+    #     echo "VERSION=$VERSION"
+    #     echo "VERSION=$VERSION" >> $GITHUB_ENV
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+    # - name: Set up Docker Buildx
+    #   uses: docker/setup-buildx-action@v2
 
-    - name: Login to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
+    # - name: Login to Docker Hub
+    #   uses: docker/login-action@v2
+    #   with:
+    #     username: ${{ secrets.DOCKERHUB_USERNAME }}
+    #     password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     # - name: Build and Push Docker image
     #   uses: docker/build-push-action@v4
@@ -43,13 +51,13 @@ jobs:
     #     push: true
     #     tags: ${{ secrets.DOCKERHUB_USERNAME }}/zango:latest
     
-    - name: Build and Push Docker image with tag
-      uses: docker/build-push-action@v4
-      with:
-        context: .
-        push: true
-        platforms: linux/amd64,linux/arm64
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/zango:${{ env.VERSION }}
+    # - name: Build and Push Docker image with tag
+    #   uses: docker/build-push-action@v4
+    #   with:
+    #     context: .
+    #     push: true
+    #     platforms: linux/amd64,linux/arm64
+    #     tags: ${{ secrets.DOCKERHUB_USERNAME }}/zango:${{ env.VERSION }}
 
   # build-zango:
   #   name: Build distribution 📦
