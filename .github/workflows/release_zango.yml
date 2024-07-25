@@ -7,7 +7,7 @@ on:
       - 'CHANGELOG.md'
     branches:
       - main
-  push:
+  # push:
 
 jobs:
   check-publish:
