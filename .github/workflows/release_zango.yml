@@ -19,18 +19,16 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
     - name: Extract Latest Tag
-      id: tag
-      uses: actions/github-script@v7
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |
-          return context.payload.ref.replace(/\/refs\/tags\//, '');
+      run: |
+        gh release ls -L 1 --json "tagName" >> info.json
+        LATEST_TAG=$(cat info.json | jq -r '.[0].tagName')
+        echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
     - name: Check merged
       run: echo "MERGED=${{ github.event.pull_request.merged }}" >> $GITHUB_ENV
     - name: Check Publish
       id: check_publish
       env:
-        LATEST_TAG: ${{ steps.tag.outputs.result }}
+        LATEST_TAG: ${{ env.LATEST_TAG }}
         MERGED: ${{ env.MERGED }}
       run: |
         echo "latest_tag=$LATEST_TAG"
