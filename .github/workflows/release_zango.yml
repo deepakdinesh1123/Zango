@@ -44,7 +44,7 @@ jobs:
   publish-to-dockerhub:
     runs-on: ubuntu-latest
     needs: check-publish
-    if: ${{ needs.check-publish.outputs.publish == false }} && github.event.pull_request.merged == true
+    if: ${{ needs.check-publish.outputs.publish == true }} && github.event.pull_request.merged == true
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
