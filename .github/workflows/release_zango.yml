@@ -163,19 +163,12 @@ jobs:
         inputs: >-
           ./dist/*.tar.gz
           ./dist/*.whl
-    - name: Get version from file
-      id: get_version
-      run: |
-          set -e
-          VERSION=$(grep '__version__' backend/src/zango/__init__.py | sed 's/.*__version__ = "\(.*\)"/\1/'| tail -1)
-          echo "VERSION=$VERSION"
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
     - name: Extract release notes
       id: extract-changelog
       uses: sean0x42/markdown-extract@v2
       with:
         file: CHANGELOG.md
-        pattern: '${{ env.VERSION }}'
+        pattern: '${{ needs.check-publish.outputs.version }}'
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
@@ -183,8 +176,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       with:
-        tag_name: v${{ env.VERSION }} # Use the environment variable
-        release_name: Release v${{ env.VERSION }}
+        tag_name: v${{ needs.check-publish.outputs.version }}
+        release_name: Release v${{ needs.check-publish.outputs.version }}
         prerelease: false
         draft: false
         body: ${{ steps.extract-changelog.outputs.markdown }}
