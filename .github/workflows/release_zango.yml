@@ -24,6 +24,8 @@ jobs:
         LATEST_TAG: ${{ github.event.release.tag_name }}
         MERGED: ${{ github.event.pull_request.merged }}
       run: |
+        echo "latest_tag=$LATEST_TAG"
+        echo "merged=$MERGED"
         CHANGELOG_VERSION=$(grep -m 1 '## \[' CHANGELOG.md | sed 's/.*\[\(.*\)\]/\1/' | grep -oE '([0-9]+\.[0-9]+\.[0-9]+\.?\w*)')
         INIT_VERSION=$(grep '__version__' backend/src/zango/__init__.py | sed 's/.*__version__ = "\(.*\)"/\1/'| tail -1)
         SETUP_VERSION=$(grep 'PLATFORM_VERSION' backend/setup.py | sed 's/.*PLATFORM_VERSION = "\(.*\)"/\1/'| head -n 1)
