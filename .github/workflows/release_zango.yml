@@ -18,11 +18,15 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+    - name: Get latest tag
+      run: echo "LATEST_TAG=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+    - name: Check merged
+      run: echo "MERGED=${{ github.event.pull_request.merged }}" >> $GITHUB_ENV
     - name: Check Publish
       id: check_publish
       env:
-        LATEST_TAG: ${{ github.event.release.tag_name }}
-        MERGED: ${{ github.event.pull_request.merged }}
+        LATEST_TAG: ${{ env.LATEST_TAG }}
+        MERGED: ${{ env.MERGED }}
       run: |
         echo "latest_tag=$LATEST_TAG"
         echo "merged=$MERGED"
