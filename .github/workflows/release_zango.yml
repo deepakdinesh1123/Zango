@@ -78,7 +78,7 @@ jobs:
         context: .
         push: true
         platforms: linux/amd64,linux/arm64
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/zango:${{ needs.check-version.outputs.version }}
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/zango:${{ needs.check-publish.outputs.version }}
 
   build-zango:
     name: Build distribution 📦
@@ -101,14 +101,14 @@ jobs:
       run: |
         python3 -m build backend --outdir dist
     - name: Store the distribution packages
-      if: github.event.pull_request.merged == true && needs.check-publish.outputs.publish == true
+      if: github.event.pull_request.merged == true && needs.check-publish.outputs.publish == 'true'
       uses: actions/upload-artifact@v3
       with:
         name: python-package-distributions
         path: dist/
 
   publish-to-testpypi:
-    if: github.event.pull_request.merged == true && needs.check-publish.outputs.publish == true
+    if: github.event.pull_request.merged == true && needs.check-publish.outputs.publish == 'true'
     name: Publish Python 🐍 distribution 📦 to TestPyPI
     needs:
     - build-zango
@@ -135,7 +135,7 @@ jobs:
         repository-url: https://test.pypi.org/legacy/
 
   github-release:
-    if: github.event.pull_request.merged == true && needs.check-publish.outputs.publish == true
+    if: github.event.pull_request.merged == true && needs.check-publish.outputs.publish == 'true'
     name: >-
       Sign the Python 🐍 distribution 📦 with Sigstore
       and upload them to GitHub Release
