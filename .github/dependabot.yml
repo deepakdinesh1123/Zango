@@ -1,0 +1,25 @@
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "/backend/requirements/base.txt"
+    schedule:
+      interval: "daily"
+    target-branch: "main"
+    labels:
+      - "dependencies"
+      - "python"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "deepakdinesh1123"
+
+
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "daily"
+    target-branch: "main"
+    labels:
+      - "dependencies"
+      - "javascript"
+      - "react"
+    open-pull-requests-limit: 10
